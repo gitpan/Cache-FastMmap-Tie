@@ -1,4 +1,7 @@
 Revision history for Perl extension Cache::FastMmap::Tie
 
+0.01     Wed Dec 19 13:15:09 2007
+        - Document modifications
+
 0.00_01  Tue Dec 18 21:40:49 2007
         - original version

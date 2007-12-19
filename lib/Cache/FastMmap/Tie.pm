@@ -2,7 +2,7 @@ package Cache::FastMmap::Tie;
 
 use strict;
 use 5.8.1;
-our $VERSION = '0.00_01';
+our $VERSION = '0.01';
 
 use UNIVERSAL::require;
 use Class::Inspector;
@@ -77,22 +77,22 @@ Cache::FastMmap::Tie - Using Cache::FastMmap as hash
 
 =head1 SYNOPSIS
 
-use Cache::FastMmap::Tie;
-my $mmap = tie my %hash, 'Cache::FastMmap::Tie', {
-    share_file => "file_name",
-    cache_size => "1k",
-    expire_time=> "10m",
-};
-$hash{ABC} = 'abc';
-$hash{abc_def} = [qw(ABC DEF)];
-$hash{xyz_XYZ} = {aaa=>'AAA',BBB=>[qw(ccc DDD),{eee=>'FFF'}],xxx=>'YYY'};
+    use Cache::FastMmap::Tie;
+    my $mmap = tie my %hash, 'Cache::FastMmap::Tie', {
+        share_file => "file_name",
+        cache_size => "1k",
+        expire_time=> "10m",
+    };
 
-print $hash{ABC}; # $mmap->get('ABC');
+    $hash{ABC} = 'abc'; # $mmap->set('ABC', 'abc');
+    $hash{abc_def} = [qw(ABC DEF)];
+    $hash{xyz_XYZ} = {aaa=>'AAA',BBB=>[qw(ccc DDD),{eee=>'FFF'}],xxx=>'YYY'};
 
-for ( keys %hash ) {
-	print $hash{$_}; # $mmap->get($_);
-}
+    print $hash{ABC}; # $mmap->get('ABC');
 
+    for ( keys %hash ) { # $mmap->get_keys(0);
+        print $hash{$_}, "\n"; # $mmap->get($_);
+    }
 
 =head1 DESCRIPTION
 
@@ -108,5 +108,7 @@ This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself.
 
 =head1 SEE ALSO
+
+L<Cache::FastMmap>
 
 =cut

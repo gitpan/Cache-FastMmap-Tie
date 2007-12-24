@@ -2,7 +2,7 @@ package Cache::FastMmap::Tie;
 
 use strict;
 use 5.8.1;
-our $VERSION = '0.01';
+our $VERSION = '0.01_01';
 
 use UNIVERSAL::require;
 use Class::Inspector;
@@ -78,20 +78,20 @@ Cache::FastMmap::Tie - Using Cache::FastMmap as hash
 =head1 SYNOPSIS
 
     use Cache::FastMmap::Tie;
-    my $mmap = tie my %hash, 'Cache::FastMmap::Tie', {
+    my $fc = tie my %hash, 'Cache::FastMmap::Tie', {
         share_file => "file_name",
         cache_size => "1k",
         expire_time=> "10m",
     };
 
-    $hash{ABC} = 'abc'; # $mmap->set('ABC', 'abc');
+    $hash{ABC} = 'abc'; # $fc->set('ABC', 'abc');
     $hash{abc_def} = [qw(ABC DEF)];
     $hash{xyz_XYZ} = {aaa=>'AAA',BBB=>[qw(ccc DDD),{eee=>'FFF'}],xxx=>'YYY'};
 
-    print $hash{ABC}; # $mmap->get('ABC');
+    print $hash{ABC}; # $fc->get('ABC');
 
-    for ( keys %hash ) { # $mmap->get_keys(0);
-        print $hash{$_}, "\n"; # $mmap->get($_);
+    for ( keys %hash ) { # $fc->get_keys(0);
+        print $hash{$_}, "\n"; # $fc->get($_);
     }
 
 =head1 DESCRIPTION

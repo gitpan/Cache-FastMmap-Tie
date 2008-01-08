@@ -2,41 +2,23 @@ package Cache::FastMmap::Tie;
 
 use strict;
 use 5.8.1;
-our $VERSION = '0.01_01';
+our $VERSION = '0.01_02';
 
-use UNIVERSAL::require;
-use Class::Inspector;
 use base 'Cache::FastMmap';
-
-our $yamlmodule;
-
-sub import {
-    my $class = shift ;
-    $yamlmodule = shift;
-    $yamlmodule and $yamlmodule =~/YAML/ 
-        and $yamlmodule->use(qw(LoadFile));
-}
+use Class::Inspector;
+use Best [ [ qw/YAML::XS YAML::Syck YAML/ ], qw/LoadFile/ ];
 
 sub TIEHASH{
     my ($class, $params_hash) = @_;
-    
-    if ($yamlmodule and my $yaml_file = delete $params_hash->{yaml_file}){
-        eval '$params_hash' . qq{ = ${yamlmodule}::LoadFile("$yaml_file")};
-        $params_hash or die "Can't open `$yaml_file':$@ ..",__LINE__;
-    }elsif ($yaml_file = delete $params_hash->{yaml_file}){
-        $params_hash = undef;
-        for $yamlmodule( qw(YAML::XS YAML::Syck YAML) ) {
-            Class::Inspector->loaded( $yamlmodule ) and 
-                eval qq{$params_hash  = $yamlmodule::LoadFile("$yaml_file")};
-            $yamlmodule->use() or die $@;
-            eval '$params_hash' . qq{ = ${yamlmodule}::LoadFile("$yaml_file")};
-            last;
-        }
-        $params_hash or die "Can't open `$yaml_file':$@ ..$yamlmodule..",__LINE__;
+    if (my $yaml_file = delete $params_hash->{yaml_file}) {
+        $params_hash = LoadFile("$yaml_file") or die "Can't open `$yaml_file':$@ ",__LINE__;
+        
+        ############################
+        #use Data::Dumper;
+        #print '#DEBUG#', Dumper $params_hash;
     }
-
     my $self = $class->new(%{$params_hash});
-    $self->{tie} = {};
+    $self->{_tie_var} = {};
     return $self;
 }
 
@@ -55,13 +37,13 @@ sub EXISTS { # ( Key )
 
 sub FIRSTKEY {
     my $self = shift;
-    @{$self->{tie}->{get_keys_0}} = $self->get_keys(0);
-    shift @{$self->{tie}->{get_keys_0}};
+    @{$self->{_tie_var}->{get_keys_0}} = $self->get_keys(0);
+    shift @{$self->{_tie_var}->{get_keys_0}};
 }
 
 sub NEXTKEY { # ( prevKey )
     my $self = shift;
-    shift @{$self->{tie}->{get_keys_0}};
+    shift @{$self->{_tie_var}->{get_keys_0}};
 }
 
 #sub DESTROY {}
@@ -93,6 +75,15 @@ Cache::FastMmap::Tie - Using Cache::FastMmap as hash
     for ( keys %hash ) { # $fc->get_keys(0);
         print $hash{$_}, "\n"; # $fc->get($_);
     }
+
+or 
+
+    my $cf = tie my %hash, 'Cache::FastMmap::Tie', {yaml_file=>'yaml.txt'}
+
+example (yaml.txt)
+
+    expire_time: 1m
+    cache_size: 10k
 
 =head1 DESCRIPTION
 

@@ -16,3 +16,5 @@ META.yml
 README
 t/00_compile.t
 t/01_tie.t
+t/02_tie.t
+t/conf.yaml

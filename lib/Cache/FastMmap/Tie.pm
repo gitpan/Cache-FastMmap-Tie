@@ -1,8 +1,8 @@
 package Cache::FastMmap::Tie;
 
 use strict;
-use 5.8.1;
-our $VERSION = '0.01_02';
+use v5.8.1;
+our $VERSION = '0.02';
 
 use base 'Cache::FastMmap';
 use Class::Inspector;
@@ -11,11 +11,8 @@ use Best [ [ qw/YAML::XS YAML::Syck YAML/ ], qw/LoadFile/ ];
 sub TIEHASH{
     my ($class, $params_hash) = @_;
     if (my $yaml_file = delete $params_hash->{yaml_file}) {
-        $params_hash = LoadFile("$yaml_file") or die "Can't open `$yaml_file':$@ ",__LINE__;
-        
-        ############################
-        #use Data::Dumper;
-        #print '#DEBUG#', Dumper $params_hash;
+        $params_hash = LoadFile("$yaml_file") or 
+            die "Can't open `$yaml_file':$@ ",__LINE__;
     }
     my $self = $class->new(%{$params_hash});
     $self->{_tie_var} = {};
@@ -48,8 +45,6 @@ sub NEXTKEY { # ( prevKey )
 
 #sub DESTROY {}
 
-
-
 1;
 __END__
 
@@ -76,11 +71,11 @@ Cache::FastMmap::Tie - Using Cache::FastMmap as hash
         print $hash{$_}, "\n"; # $fc->get($_);
     }
 
-or 
+or Basic global parameter can also be obtained from a YAML file.
 
     my $cf = tie my %hash, 'Cache::FastMmap::Tie', {yaml_file=>'yaml.txt'}
 
-example (yaml.txt)
+It is the sample of the YAML file. (yaml.txt)
 
     expire_time: 1m
     cache_size: 10k

@@ -17,4 +17,6 @@ README
 t/00_compile.t
 t/01_tie.t
 t/02_tie_yaml.t
+t/03_EXISTS.t
+t/04_expired.t
 t/conf.yaml
